@@ -2,6 +2,8 @@
 
 用同一批样例检查AI任务的提示词版本：保留输入、输出、规则、失败与人工意见，让迭代有可追溯的依据。
 
+[在线演示](https://tjcmys888.github.io/skillcheck/) · [源码仓库](https://github.com/TJCMYS888/skillcheck) · [自动检查](https://github.com/TJCMYS888/skillcheck/actions/workflows/ci.yml)
+
 ![SkillCheck界面](product/assets/desktop.jpg)
 
 ## 快速开始

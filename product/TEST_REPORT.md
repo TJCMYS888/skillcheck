@@ -21,6 +21,8 @@
 
 规则演示V1验收5/12，V2验收12/12，其中2条是预期输入拦截。V1的补造事实和V2的规则处理均为预先定义的样例行为，因此这组数字不能代表真实模型提升、Prompt优劣或生产可用率。
 
-完整记录可在examples中重现；不存在外部模型实测、真实用户、线上A/B或已运行的GitHub CI。
+完整记录可在examples中重现；不存在外部模型实测、真实用户或线上A/B结果。
+
+首次源码发布提交`6366fa2`已通过[GitHub远程检查](https://github.com/TJCMYS888/skillcheck/actions/runs/38720572401)。[在线规则演示](https://tjcmys888.github.io/skillcheck/)由GitHub Pages发布；后续提交的检查状态见仓库Actions。
 
 ![桌面](assets/desktop.jpg)
