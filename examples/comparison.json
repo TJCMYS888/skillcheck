@@ -1,0 +1,14 @@
+{
+  "comparable": true,
+  "improved": [
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C11"
+  ],
+  "regressed": [],
+  "scope": "Rule-demo differences, not model improvement"
+}

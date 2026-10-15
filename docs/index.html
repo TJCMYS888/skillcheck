@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SkillCheck · AI 任务评测台</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./"
+        ><span>SC</span><strong>SkillCheck</strong
+        ><small>AI 任务评测台</small></a
+      ><a href="#guide">评测口径 ↗</a>
+    </header>
+    <main>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">EVALUATE BEFORE YOU SHIP</p>
+          <h1>把“感觉更好”，变成可复核的结果。</h1>
+          <p class="muted">固定样例，保留版本，逐条看清失败原因。</p>
+        </div>
+        <span class="pill" id="mode-badge">合成用例 · 规则演示</span>
+      </div>
+      <div
+        id="notice"
+        class="notice"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></div>
+      <div class="layout">
+        <aside class="panel controls">
+          <p class="eyebrow">TASK DEFINITION</p>
+          <h2>活动资料 → 短视频脚本</h2>
+          <p class="muted">保留活动事实，缺失或矛盾的信息交给用户确认。</p>
+          <label for="version">提示词版本</label
+          ><select id="version"></select
+          ><label for="prompt">系统提示词</label
+          ><textarea id="prompt" rows="10" maxlength="12000"></textarea
+          ><button id="save-version" class="secondary wide">
+            另存为新版本
+          </button>
+          <p class="micro">
+            提示词修改需先另存。演示输出由版本的演示策略生成；真实模式才使用提示词调用模型。
+          </p>
+          <label for="policy">演示策略</label
+          ><select id="policy">
+            <option value="creative">已知错误示例：填补事实</option>
+            <option value="grounded">规则示例：标记缺失与冲突</option></select
+          ><label for="mode">运行方式</label
+          ><select id="mode">
+            <option value="demo">离线规则演示</option>
+            <option value="live">真实模型（本地服务）</option>
+          </select>
+          <p id="service" class="micro">检查本地服务…</p>
+          <button id="run" class="primary wide">运行全部用例 →</button
+          ><button id="stop" class="danger wide" hidden>停止后续用例</button>
+          <p id="progress" class="micro" aria-live="polite">
+            12条合成用例，未运行
+          </p>
+          <div class="divider"></div>
+          <label for="history">运行记录</label
+          ><select id="history">
+            <option value="">暂无运行</option></select
+          ><button id="export-report" class="secondary wide" disabled>
+            导出当前报告 JSON</button
+          ><button id="export-md" class="secondary wide" disabled>
+            导出评测摘要 Markdown
+          </button>
+          <p class="micro">
+            数据保存在浏览器，导出文件可备份。没有线上用户数据。
+          </p>
+        </aside>
+        <section class="results">
+          <div class="stats">
+            <div>
+              <span>验收通过</span><strong id="stat-pass">—</strong
+              ><small>包含预期被拦截的输入</small>
+            </div>
+            <div>
+              <span>运行进度</span><strong id="stat-complete">0 / 12</strong
+              ><small>中止时保留已完成结果</small>
+            </div>
+            <div>
+              <span>失败／错误</span><strong id="stat-fail">—</strong
+              ><small>规则未通过或调用失败</small>
+            </div>
+            <div>
+              <span>人工复核</span><strong id="stat-review">0</strong
+              ><small>独立于自动验收结论</small>
+            </div>
+          </div>
+          <div class="panel suite-panel">
+            <div class="section-title">
+              <div>
+                <h2>用例与运行结果</h2>
+                <p class="micro" id="run-meta">
+                  事实核验规则 facts-v1.0 · 自由文本质量另行复核
+                </p>
+              </div>
+              <div class="actions">
+                <button id="add-case">新增用例</button
+                ><button id="export-cases">导出用例</button
+                ><label class="button-label" for="import-cases"
+                  >导入 JSON<input
+                    id="import-cases"
+                    type="file"
+                    accept=".json"
+                    hidden
+                /></label>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>用例</th>
+                    <th>测试场景</th>
+                    <th>运行状态</th>
+                    <th>自动验收</th>
+                    <th>人工意见</th>
+                  </tr>
+                </thead>
+                <tbody id="case-rows"></tbody>
+              </table>
+            </div>
+          </div>
+          <section id="detail-panel" class="panel detail-panel" hidden>
+            <div class="section-title">
+              <h2 id="detail-title">用例详情</h2>
+              <span id="detail-time" class="micro"></span>
+            </div>
+            <div class="detail-grid">
+              <div>
+                <h3>检查结果</h3>
+                <div id="checks"></div>
+                <h3>输入样本</h3>
+                <pre id="case-input"></pre>
+              </div>
+              <div>
+                <h3>原始输出 / 错误</h3>
+                <pre id="raw"></pre>
+                <label for="review-decision">人工判断</label
+                ><select id="review-decision">
+                  <option value="pending">待复核</option>
+                  <option value="approved">可采用</option>
+                  <option value="rejected">需修改</option></select
+                ><label for="review-note">原因与修改建议</label
+                ><textarea
+                  id="review-note"
+                  rows="3"
+                  maxlength="2000"
+                  placeholder="例如：字段正确，但脚本缺少明确的行动引导"
+                ></textarea
+                ><button id="save-review" class="secondary wide">
+                  保存人工复核
+                </button>
+              </div>
+            </div>
+          </section>
+          <section class="panel compare-panel">
+            <div class="section-title">
+              <div>
+                <h2>同条件版本对比</h2>
+                <p class="micro">
+                  用例内容、规则、模式及模型一致，且两次均完整运行，才进行配对。
+                </p>
+              </div>
+              <button id="compare">比较所选运行</button>
+            </div>
+            <div class="compare-selects">
+              <label>基线<select id="compare-a"></select></label
+              ><label>候选<select id="compare-b"></select></label>
+            </div>
+            <div id="comparison" class="muted">
+              先运行V1与V2，再比较每条用例的通过／失败变化。
+            </div>
+          </section>
+        </section>
+      </div>
+      <section id="guide" class="guide">
+        <h2>先明确这份报告能说明什么</h2>
+        <div>
+          <p>
+            <strong>演示结果不是模型成绩</strong
+            ><br />内置12条人工编写的合成用例。V1故意模拟补造事实，V2使用规则保留事实，用于演示评测流程。
+          </p>
+          <p>
+            <strong>规则通过不等于内容可用</strong
+            ><br />自动检查标题、三段结构、facts字段与缺失／冲突标记。自由文本语义、文案质量与真实任务效果需要人工判断。
+          </p>
+          <p>
+            <strong>保留失败，也保留条件</strong
+            ><br />报告记录提示词、样本、规则版本、模式、模型、错误和人工意见。真实调用的用量以服务返回为准，未估算价格。
+          </p>
+        </div>
+      </section>
+    </main>
+    <dialog id="case-dialog">
+      <form id="case-form">
+        <div class="section-title">
+          <h2>新增测试用例</h2>
+          <button id="close-case" type="button" aria-label="关闭">×</button>
+        </div>
+        <label
+          >编号<input
+            name="id"
+            required
+            maxlength="30"
+            placeholder="例如：C13" /></label
+        ><label>场景说明<input name="label" required maxlength="100" /></label
+        ><label>活动名称<input name="name" maxlength="200" /></label
+        ><label>日期<input name="date" maxlength="500" /></label
+        ><label>地点<input name="location" maxlength="500" /></label
+        ><label>价格<input name="price" maxlength="500" /></label
+        ><label
+          >活动资料<textarea
+            name="details"
+            rows="3"
+            maxlength="12000"
+          ></textarea></label
+        ><label class="checkbox-label"
+          ><input
+            type="checkbox"
+            name="expected_block"
+          />预期在运行前拦截（名称或资料为空）</label
+        ><button type="submit" class="primary wide">加入评测集</button>
+      </form>
+    </dialog>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

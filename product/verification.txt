@@ -1,0 +1,67 @@
+Verification date: 2026-10-15 (Asia/Shanghai)
+Python: 3.12.14
+Project: skillcheck
+
+$ node --test tests/core.test.mjs
+✔ suite has unique identifiers and at least twelve explicit cases (3.0735ms)
+✔ name is required (1.062ms)
+✔ details are required (0.3167ms)
+✔ strict demo marks missing facts rather than filling defaults (2.3785ms)
+✔ known bad demo fixture exposes invented facts (0.6147ms)
+✔ conflicting prices are raised for human confirmation (0.522ms)
+✔ valid JSON alone is insufficient to pass (0.3411ms)
+✔ extra missing flags on complete input fail (0.425ms)
+✔ input blocking never invokes producer (4.1995ms)
+✔ upstream failure is recorded as error, not success (1.3195ms)
+✔ malformed model content is kept for diagnosis (0.7677ms)
+✔ summary counts cancellation and partial runs honestly (0.5454ms)
+✔ fingerprints include case contents, not only IDs (0.6195ms)
+✔ comparisons reject different suites or modes and incomplete runs (0.6402ms)
+✔ matched comparison identifies actual case transitions (4.8326ms)
+✔ untrusted labels are HTML escaped (2.5808ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 353.1578
+
+
+exit_code=0
+
+$ python -m unittest discover -s tests -p test_server.py -v
+
+test_cross_origin_is_rejected (test_server.ServerTests.test_cross_origin_is_rejected) ... ok
+test_foreign_host_is_rejected (test_server.ServerTests.test_foreign_host_is_rejected) ... ok
+test_index_is_served (test_server.ServerTests.test_index_is_served) ... ok
+test_invalid_json_is_a_client_error (test_server.ServerTests.test_invalid_json_is_a_client_error) ... ok
+test_invalid_roles_are_rejected (test_server.ServerTests.test_invalid_roles_are_rejected) ... ok
+test_large_body_is_rejected (test_server.ServerTests.test_large_body_is_rejected) ... ok
+test_mock_provider_contract (test_server.ServerTests.test_mock_provider_contract) ... ok
+test_modules_have_browser_mime_type (test_server.ServerTests.test_modules_have_browser_mime_type) ... ok
+test_provider_error_redacts_upstream_body (test_server.ServerTests.test_provider_error_redacts_upstream_body) ... ok
+test_source_and_path_traversal_are_not_served (test_server.ServerTests.test_source_and_path_traversal_are_not_served) ... ok
+test_status_never_exposes_key (test_server.ServerTests.test_status_never_exposes_key) ... ok
+test_unconfigured_model_returns_actionable_error (test_server.ServerTests.test_unconfigured_model_returns_actionable_error) ... ok
+test_unknown_endpoint_is_not_silently_successful (test_server.ServerTests.test_unknown_endpoint_is_not_silently_successful) ... ok
+test_wrong_content_type_is_rejected (test_server.ServerTests.test_wrong_content_type_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.841s
+
+OK
+
+exit_code=0
+
+$ node --check docs/app.js
+
+
+exit_code=0
+
+$ node scripts/export-demo.mjs
+[{"version":"v1","passed":5,"total":12,"source":"synthetic-rule-fixtures"},{"version":"v2","passed":12,"total":12,"source":"synthetic-rule-fixtures"}]
+
+
+exit_code=0
